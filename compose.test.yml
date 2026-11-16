@@ -1,0 +1,57 @@
+# Local test only (not used by Railway): same variables the template sets.
+name: her-2274
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment: {POSTGRES_DB: railway, POSTGRES_USER: postgres, POSTGRES_PASSWORD: pgtestpass123}
+    volumes: [pg:/var/lib/postgresql]
+    labels: {her: "2274"}
+  rabbitmq:
+    build: ./rabbitmq
+    environment: {RABBITMQ_DEFAULT_USER: taiga, RABBITMQ_DEFAULT_PASS: rabbittestpass123}
+    volumes: [rmq:/var/lib/rabbitmq]
+    labels: {her: "2274"}
+  taiga-back:
+    build: ./back
+    environment:
+      PORT: "8000"
+      TAIGA_SECRET_KEY: localtestsecretkey0123456789abcdefghijklmnop
+      TAIGA_SITES_DOMAIN: localhost:42274
+      TAIGA_SITES_SCHEME: http
+      SESSION_COOKIE_SECURE: "False"
+      CSRF_COOKIE_SECURE: "False"
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: railway
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pgtestpass123
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: taiga
+      RABBITMQ_PASS: rabbittestpass123
+      TAIGA_PROTECTED_HOST: taiga-protected
+      TAIGA_ADMIN_PASSWORD: AdminTestPass2274
+    volumes: [media:/taiga-back/media]
+    labels: {her: "2274"}
+  taiga-events:
+    build: ./events
+    environment:
+      TAIGA_EVENTS_RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: taiga
+      RABBITMQ_PASS: rabbittestpass123
+      TAIGA_SECRET_KEY: localtestsecretkey0123456789abcdefghijklmnop
+    labels: {her: "2274"}
+  taiga-protected:
+    build: ./protected
+    environment: {SECRET_KEY: localtestsecretkey0123456789abcdefghijklmnop}
+    labels: {her: "2274"}
+  taiga:
+    build: ./front
+    environment:
+      PORT: "8080"
+      TAIGA_DOMAIN: localhost:42274
+      TAIGA_BACK_HOST: taiga-back
+      TAIGA_BACK_PORT: "8000"
+      TAIGA_EVENTS_HOST: taiga-events
+    ports: ["42274:8080"]
+    labels: {her: "2274"}
+volumes: {pg: {}, rmq: {}, media: {}}

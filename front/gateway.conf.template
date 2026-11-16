@@ -1,0 +1,41 @@
+# Rendered by the nginx image's envsubst step into /etc/nginx/conf.d/default.conf.
+server {
+    listen [::]:${PORT} ipv6only=off default_server;
+
+    client_max_body_size 100M;
+    charset utf-8;
+
+    resolver ${NGINX_RESOLVER} valid=30s;
+    set $taiga_back ${TAIGA_BACK_HOST}:${TAIGA_BACK_PORT};
+    set $taiga_events ${TAIGA_EVENTS_HOST}:8888;
+
+    # Web app
+    location / {
+        root /usr/share/nginx/html;
+        index index.html;
+        try_files $uri $uri/ /index.html;
+    }
+
+    # API, Django admin, static files and media: taiga-back
+    location ~ ^/(api|admin|static|media)/ {
+        proxy_pass http://$taiga_back;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_redirect off;
+        proxy_read_timeout 300s;
+    }
+
+    # Realtime events (websocket): taiga-events
+    location /events {
+        proxy_pass http://$taiga_events;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_connect_timeout 7d;
+        proxy_send_timeout 7d;
+        proxy_read_timeout 7d;
+    }
+}
