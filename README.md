@@ -1,5 +1,7 @@
 # Taiga on Railway
 
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new/template/taiga?utm_medium=integration&utm_source=button&utm_campaign=taiga)
+
 A one-click [Railway](https://railway.com) template for [Taiga](https://taiga.io/), the open-source project management tool for agile teams (Scrum backlogs, sprints, Kanban boards, issues, epics and wiki).
 
 **Version:** Taiga 6.10: `taigaio/taiga-back:6.10.2`, `taigaio/taiga-front:6.10.3`, `taigaio/taiga-events:6.10.0` and `taigaio/taiga-protected:6.10.1`, the official images pinned by digest in each service's `Dockerfile`. RabbitMQ 4.4.0 (`rabbitmq:4.4.0-alpine`, pinned by digest) and Railway's PostgreSQL.
